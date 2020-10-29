@@ -4,16 +4,21 @@ const path = require('path');
 
 const usersPath = path.join(__dirname, '../data/users.json');
 
-fsPromises.readFile(usersPath, { encoding: 'utf8' })
-  .then((data) => JSON.parse(data))
-  .then((users) => {
-    getUsers.get('/', (req, res) => {
+getUsers.get('/', (req, res) => {
+  fsPromises.readFile(usersPath, { encoding: 'utf8' })
+    .then((data) => JSON.parse(data))
+    .then((users) => {
       res.send(users);
+    })
+    .catch((err) => {
+      console.log(err);
     });
-    return users;
-  })
-  .then((users) => {
-    getUsers.get('/:id', (req, res) => {
+});
+
+getUsers.get('/:id', (req, res) => {
+  fsPromises.readFile(usersPath, { encoding: 'utf8' })
+    .then((data) => JSON.parse(data))
+    .then((users) => {
       const user = users.find((u) => u._id === req.params.id);
 
       if (!user) {
@@ -22,10 +27,10 @@ fsPromises.readFile(usersPath, { encoding: 'utf8' })
       }
 
       res.send(user);
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+});
 
 module.exports = getUsers;

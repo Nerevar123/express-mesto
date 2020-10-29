@@ -9,7 +9,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/users', getUsers);
 app.use('/cards', getCards);
-app.get('*', (req, res) => {
+app.use('*', (req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
