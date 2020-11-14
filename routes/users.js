@@ -1,38 +1,12 @@
-const getUsers = require('express').Router();
-const fsPromises = require('fs').promises;
-const path = require('path');
+const router = require('express').Router();
+const {
+  getUsers, getUser, createUser, updateUser, updateUserAvatar,
+} = require('../controllers/users');
 
-const usersPath = path.join(__dirname, '../data/users.json');
+router.get('/', getUsers);
+router.get('/:userId', getUser);
+router.post('/', createUser);
+router.patch('/me', updateUser);
+router.patch('/me/avatar', updateUserAvatar);
 
-getUsers.get('/', (req, res) => {
-  fsPromises.readFile(usersPath, { encoding: 'utf8' })
-    .then((data) => JSON.parse(data))
-    .then((users) => {
-      res.send(users);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send({ message: 'Ошибка сервера' });
-    });
-});
-
-getUsers.get('/:id', (req, res) => {
-  fsPromises.readFile(usersPath, { encoding: 'utf8' })
-    .then((data) => JSON.parse(data))
-    .then((users) => {
-      const user = users.find((u) => u._id === req.params.id);
-
-      if (!user) {
-        res.status(404).send({ message: 'Нет пользователя с таким id' });
-        return;
-      }
-
-      res.send(user);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send({ message: 'Ошибка сервера' });
-    });
-});
-
-module.exports = getUsers;
+module.exports = router;
