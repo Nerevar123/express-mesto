@@ -11,12 +11,16 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
+    .orFail(new Error('notValidId'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
+        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
+      } else if (err.message === 'notValidId') {
         res.status(ERROR_CODE_404).send({ message: errorMessage404 });
+      } else {
+        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
       }
-      res.status(ERROR_CODE_500).send({ message: errorMessage500 });
     });
 };
 
@@ -28,8 +32,9 @@ module.exports.createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_CODE_400).send({ message: errorMessage400 });
+      } else {
+        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
       }
-      res.status(ERROR_CODE_500).send({ message: errorMessage500 });
     });
 };
 
@@ -44,12 +49,16 @@ module.exports.updateUser = (req, res) => {
       runValidators: true,
     },
   )
+    .orFail(new Error('notValidId'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_CODE_400).send({ message: errorMessage400 });
+      } else if (err.message === 'notValidId') {
+        res.status(ERROR_CODE_404).send({ message: errorMessage404 });
+      } else {
+        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
       }
-      res.status(ERROR_CODE_500).send({ message: errorMessage500 });
     });
 };
 
@@ -64,11 +73,15 @@ module.exports.updateUserAvatar = (req, res) => {
       runValidators: true,
     },
   )
+    .orFail(new Error('notValidId'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_CODE_400).send({ message: errorMessage400 });
+      } else if (err.message === 'notValidId') {
+        res.status(ERROR_CODE_404).send({ message: errorMessage404 });
+      } else {
+        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
       }
-      res.status(ERROR_CODE_500).send({ message: errorMessage500 });
     });
 };

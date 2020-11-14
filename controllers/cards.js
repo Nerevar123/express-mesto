@@ -17,19 +17,24 @@ module.exports.createCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_CODE_400).send({ message: errorMessage400 });
+      } else {
+        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
       }
-      res.status(ERROR_CODE_500).send({ message: errorMessage500 });
     });
 };
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
+    .orFail(new Error('notValidId'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
+        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
+      } else if (err.message === 'notValidId') {
         res.status(ERROR_CODE_404).send({ message: errorMessage404 });
+      } else {
+        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
       }
-      res.status(ERROR_CODE_500).send({ message: errorMessage500 });
     });
 };
 
@@ -39,12 +44,16 @@ module.exports.putLike = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(new Error('notValidId'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
+        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
+      } else if (err.message === 'notValidId') {
         res.status(ERROR_CODE_404).send({ message: errorMessage404 });
+      } else {
+        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
       }
-      res.status(ERROR_CODE_500).send({ message: errorMessage500 });
     });
 };
 
@@ -54,11 +63,15 @@ module.exports.deleteLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(new Error('notValidId'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
+        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
+      } else if (err.message === 'notValidId') {
         res.status(ERROR_CODE_404).send({ message: errorMessage404 });
+      } else {
+        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
       }
-      res.status(ERROR_CODE_500).send({ message: errorMessage500 });
     });
 };
