@@ -6,6 +6,14 @@ const errorMessage400 = 'Переданы некорректные данные'
 const errorMessage404 = 'Запрашиваемый ресурс не найден';
 const errorMessage500 = 'На сервере произошла ошибка';
 
-module.exports = {
-  ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500, errorMessage400, errorMessage404, errorMessage500,
+const checkError = (res, err) => {
+  if (err.name === 'CastError' || err.name === 'ValidationError') {
+    res.status(ERROR_CODE_400).send({ message: errorMessage400 });
+  } else if (err.message === 'notValidId') {
+    res.status(ERROR_CODE_404).send({ message: errorMessage404 });
+  } else {
+    res.status(ERROR_CODE_500).send({ message: errorMessage500 });
+  }
 };
+
+module.exports = { ERROR_CODE_404, errorMessage404, checkError };

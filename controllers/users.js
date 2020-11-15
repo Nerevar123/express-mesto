@@ -1,27 +1,17 @@
 const User = require('../models/user');
-const {
-  ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500, errorMessage400, errorMessage404, errorMessage500,
-} = require('../utils/errors');
+const { checkError } = require('../utils/errors');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(ERROR_CODE_500).send({ message: errorMessage500 }));
+    .catch((err) => checkError(res, err));
 };
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .orFail(new Error('notValidId'))
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
-      } else if (err.message === 'notValidId') {
-        res.status(ERROR_CODE_404).send({ message: errorMessage404 });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
-      }
-    });
+    .catch((err) => checkError(res, err));
 };
 
 module.exports.createUser = (req, res) => {
@@ -29,13 +19,7 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
-      }
-    });
+    .catch((err) => checkError(res, err));
 };
 
 module.exports.updateUser = (req, res) => {
@@ -51,15 +35,7 @@ module.exports.updateUser = (req, res) => {
   )
     .orFail(new Error('notValidId'))
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
-      } else if (err.message === 'notValidId') {
-        res.status(ERROR_CODE_404).send({ message: errorMessage404 });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
-      }
-    });
+    .catch((err) => checkError(res, err));
 };
 
 module.exports.updateUserAvatar = (req, res) => {
@@ -75,13 +51,5 @@ module.exports.updateUserAvatar = (req, res) => {
   )
     .orFail(new Error('notValidId'))
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
-      } else if (err.message === 'notValidId') {
-        res.status(ERROR_CODE_404).send({ message: errorMessage404 });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
-      }
-    });
+    .catch((err) => checkError(res, err));
 };

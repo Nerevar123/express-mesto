@@ -1,12 +1,10 @@
 const Card = require('../models/card');
-const {
-  ERROR_CODE_400, ERROR_CODE_404, ERROR_CODE_500, errorMessage400, errorMessage404, errorMessage500,
-} = require('../utils/errors');
+const { checkError } = require('../utils/errors');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(ERROR_CODE_500).send({ message: errorMessage500 }));
+    .catch((err) => checkError(res, err));
 };
 
 module.exports.createCard = (req, res) => {
@@ -14,28 +12,14 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
-      }
-    });
+    .catch((err) => checkError(res, err));
 };
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(new Error('notValidId'))
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
-      } else if (err.message === 'notValidId') {
-        res.status(ERROR_CODE_404).send({ message: errorMessage404 });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
-      }
-    });
+    .catch((err) => checkError(res, err));
 };
 
 module.exports.putLike = (req, res) => {
@@ -46,15 +30,7 @@ module.exports.putLike = (req, res) => {
   )
     .orFail(new Error('notValidId'))
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
-      } else if (err.message === 'notValidId') {
-        res.status(ERROR_CODE_404).send({ message: errorMessage404 });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
-      }
-    });
+    .catch((err) => checkError(res, err));
 };
 
 module.exports.deleteLike = (req, res) => {
@@ -65,13 +41,5 @@ module.exports.deleteLike = (req, res) => {
   )
     .orFail(new Error('notValidId'))
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_400).send({ message: errorMessage400 });
-      } else if (err.message === 'notValidId') {
-        res.status(ERROR_CODE_404).send({ message: errorMessage404 });
-      } else {
-        res.status(ERROR_CODE_500).send({ message: errorMessage500 });
-      }
-    });
+    .catch((err) => checkError(res, err));
 };
