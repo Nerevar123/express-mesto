@@ -16,7 +16,6 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getLoggedUser = (req, res, next) => {
-  console.log(req.user);
   User.findById(req.user)
     .orFail(new Error('notValidId'))
     .then((user) => res.send({ data: user }))
@@ -76,9 +75,6 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      // res.send({
-      //   token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
-      // });
       const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
       res.cookie('jwt', token, {
         maxAge: 3600000,
